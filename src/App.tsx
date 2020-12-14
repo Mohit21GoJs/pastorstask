@@ -1,6 +1,6 @@
 import React, {  useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
+import { fetchContacts } from './api/contacts';
 import { ContactListModal } from './components/ContactListModal'
 import ButtonA from './components/ButtonA';
 import ButtonB from './components/ButtonB';
@@ -16,16 +16,7 @@ function App() {
     if(modal.id){
       changeUrlHash(`modal/${modal.id}`);
       if(modal.id === "A"){
-        axios.get('https://api.dev.pastorsline.com/api/contacts.json', {
-          headers: {
-            Authorization: ' Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzEiLCJleHAiOjE2MDM3ODM0Mzd9.3ievseHtX0t3roGh7nBuNsiaQeSjfiHWyyx_5GlOLXk'
-          }
-        }).then((res) => {
-          console.log(res.data)
-        })
-        .catch((error) => {
-          console.error(error)
-        });
+        fetchContacts().then(console.log);
       }
     }else{
       clearUrlHash();
