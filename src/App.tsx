@@ -1,40 +1,44 @@
-import React, { useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Modal, Form } from 'react-bootstrap';
+import axios from 'axios';
+import { ContactListModal } from './components/ContactListModal'
+import ButtonA from './components/ButtonA';
+import ButtonB from './components/ButtonB';
+import { changeUrlHash, clearUrlHash } from './utils/url'
 import './App.css';
-
-const ContentModal = ({ id, handleClose }: {id: string, handleClose: Function}) => (<Modal
-show
-onHide={handleClose}
-backdrop="static"
-keyboard={false}
->
-<Modal.Header className="modal-header">
-<Button variant="info" size="lg" className="button-a-color">All Contacts</Button>{' '}
-<Button variant="info" size="lg" className="button-b-color">US Contacts</Button>{' '}
-<Button variant="info" size="lg" className="button-c" onClick={() => handleClose()}>Close</Button>
-</Modal.Header>
-<Modal.Body>
-
-</Modal.Body>
-<Modal.Footer className="modal-footer">
-  <Form.Check type="checkbox" label="Only even" />
-</Modal.Footer>
-</Modal>)
 
 function App() {
   const [modal, setModal] = useState({
     open: false,
     id: ''
   });
+  useEffect(() => {
+    if(modal.id){
+      changeUrlHash(`modal/${modal.id}`);
+      if(modal.id === "A"){
+        axios.get('https://api.dev.pastorsline.com/api/contacts.json', {
+          headers: {
+            Authorization: ' Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzEiLCJleHAiOjE2MDM3ODM0Mzd9.3ievseHtX0t3roGh7nBuNsiaQeSjfiHWyyx_5GlOLXk'
+          }
+        }).then((res) => {
+          console.log(res.data)
+        })
+        .catch((error) => {
+          console.error(error)
+        });
+      }
+    }else{
+      clearUrlHash();
+    }
+  }, [modal.id])
   return (
     <div className="App">
       <div className="buttons-wrapper">
-        <Button variant="info" size="lg" className="button-a-color no-hover" onClick={() => setModal(v => ({...v, open: true, id: 'A'}))}>Button A</Button>{' '}
+        <ButtonA handleClick={() => setModal(v => ({...v, open: true, id: 'A'}))}>Button A</ButtonA>{' '}
         <hr />
-        <Button variant="info" size="lg" className="button-b-color no-hover" onClick={() => setModal(v => ({...v, open: true, id: 'B'}))}>Button B</Button>
+        <ButtonB handleClick={() => setModal(v => ({...v, open: true, id: 'B'}))}>Button B</ButtonB>
       </div>
-      {modal.open && <ContentModal id={modal.id} handleClose={() => setModal(v => ({...v, open: false}))} />}
+      {modal.open && <ContactListModal id={modal.id} handleClose={() => setModal(v => ({...v, open: false, id: ''}))} />}
     </div>
   );
 }
